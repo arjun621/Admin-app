@@ -87,3 +87,14 @@ module.exports.logoutUser = (req, res) => {
   res.clearCookie("token");
   return res.status(200).json({ message: "Logged out successfully" });
 };
+
+
+module.exports.getMe = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: "Not logged in" });
+    res.json({ user: req.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

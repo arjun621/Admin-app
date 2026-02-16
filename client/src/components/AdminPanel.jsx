@@ -1,19 +1,20 @@
-import React, { useState } from "react";
-import CreateUserForm from "./CreateUserForm";
-import UserList from "./UserList";
+import React from "react";
+import api from "../services/api";
 
-const AdminPanel = () => {
-  const [showCreateForm, setShowCreateForm] = useState(false);
+const AdminPanel = ({ onLogout }) => {
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      onLogout(); 
+    } catch (err) {
+      alert("Logout failed");
+    }
+  };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h1>Admin Panel</h1>
-      <button onClick={() => setShowCreateForm(!showCreateForm)}>
-        {showCreateForm ? "Hide Create User Form" : "Create User"}
-      </button>
-      {showCreateForm && <CreateUserForm />}
-      <hr />
-      <UserList />
+      <button onClick={handleLogout} style={{ marginTop: "20px" }}>Logout</button>
     </div>
   );
 };
