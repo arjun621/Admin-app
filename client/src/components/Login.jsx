@@ -6,15 +6,17 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      alert(res.data.message);
-      onLogin(); 
-    } catch (err) {
-      alert(err.response.data.message);
-    }
-  };
+  e.preventDefault();
+  try {
+    const res = await api.post("/auth/login", { email, password });
+    console.log(res.data);
+    alert(res.data.message);
+    onLogin(); 
+  } catch (err) {
+    alert(err.response?.data?.message || "Something went wrong");
+  }
+};
+
 
   return (
     <form onSubmit={handleLogin}>
