@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
+import CreateUserForm from "./CreateUserForm";
+import UserList from "./UserList";
 
 const AdminPanel = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -14,7 +13,7 @@ const AdminPanel = ({ onLogout }) => {
       const res = await api.get("/admin/users");
       setUsers(res.data.users);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   };
 
@@ -23,30 +22,17 @@ const AdminPanel = ({ onLogout }) => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-      onLogout();
-    } catch (err) {
-      alert("Logout failed");
-    }
+    await api.post("/auth/logout");
+    onLogout();
   };
 
-  const handleCreateUser = async (e) => {
-    e.preventDefault();
+  const handleCreateUser = async (userData) => {
     setMessage("");
     setError("");
 
     try {
-      const res = await api.post("/admin/create-user", {
-        fullname,
-        email,
-        password
-      });
-
+      const res = await api.post("/admin/create-user", userData);
       setMessage(res.data.message);
-      setFullname("");
-      setEmail("");
-      setPassword("");
       fetchUsers();
     } catch (err) {
       setError(err.response?.data?.message || "Error creating user");
@@ -60,60 +46,15 @@ const AdminPanel = ({ onLogout }) => {
 
       <hr />
 
-      <h2>Create User</h2>
-
-      <form onSubmit={handleCreateUser}>
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={fullname}
-          onChange={(e) => setFullname(e.target.value)}
-          required
-        />
-
-        <br /><br />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <br /><br />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <br /><br />
-
-        <button type="submit">Create User</button>
-      </form>
-
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
+      <CreateUserForm
+        onCreate={handleCreateUser}
+        message={message}
+        error={error}
+      />
 
       <hr />
 
-      <h2>Existing Users</h2>
-
-      {users.length === 0 ? (
-        <p>No users found</p>
-      ) : (
-        <ul>
-          {users.map((u) => (
-            <li key={u._id}>
-              {u.fullname} - {u.email} - {u.role}
-            </li>
-          ))}
-        </ul>
-      )}
+      <UserList users={users} />
     </div>
   );
 };

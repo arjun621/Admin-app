@@ -12,7 +12,6 @@ const Login = ({ onLogin }) => {
       const res = await api.post("/auth/login", { email, password });
       alert(res.data.message);
 
-      // IMPORTANT: send full user back to App
       onLogin(res.data.user);
 
     } catch (err) {

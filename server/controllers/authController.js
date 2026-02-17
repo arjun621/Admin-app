@@ -1,6 +1,17 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/generateToken");
+
+module.exports.checkSetup = async (req, res) => {
+  try {
+    const userCount = await userModel.countDocuments();
+    res.json({ setupRequired: userCount === 0 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports.registerUser = async (req, res) => {
   try {
@@ -27,9 +38,23 @@ module.exports.registerUser = async (req, res) => {
       role: "admin"
     });
 
+    const token = generateToken(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
     return res.status(201).json({
       message: "Admin created successfully",
-      user
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (err) {
@@ -43,26 +68,20 @@ module.exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
-
     if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      return res.status(401).json({
-        message: "Invalid credentials"
-      });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = generateToken(user);
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, 
+      secure: false,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000
     });
@@ -83,16 +102,20 @@ module.exports.loginUser = async (req, res) => {
   }
 };
 
+
 module.exports.logoutUser = (req, res) => {
   res.clearCookie("token");
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
-
 module.exports.getMe = async (req, res) => {
   try {
-    if (!req.user) return res.status(401).json({ message: "Not logged in" });
+    if (!req.user) {
+      return res.status(401).json({ message: "Not logged in" });
+    }
+
     res.json({ user: req.user });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
