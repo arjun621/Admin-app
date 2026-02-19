@@ -25,7 +25,6 @@ function App() {
             setUser(null);
           }
         }
-
       } catch (err) {
         console.error(err);
       } finally {
@@ -36,11 +35,17 @@ function App() {
     checkSetup();
   }, []);
 
-  const handleLogin = (loggedInUser) => {
-  setUser(loggedInUser);
-  setSetupRequired(false);   // ← ADD THIS
+const handleLogin = async (loggedInUser) => {
+  try {
+    // Fetch latest user info from backend
+    const meRes = await api.get("/auth/me");
+    setUser(meRes.data.user);
+    setSetupRequired(false);
+  } catch (err) {
+    console.error(err);
+    setUser(loggedInUser); // fallback
+  }
 };
-
 
   const handleLogout = async () => {
     await api.post("/auth/logout");
@@ -69,9 +74,9 @@ function App() {
               !user ? (
                 <Login onLogin={handleLogin} />
               ) : user.role === "admin" ? (
-                <Navigate to="/admin" />
+                <Navigate to="/admin" replace />
               ) : (
-                <Navigate to="/dashboard" />
+                <Navigate to="/dashboard" replace />
               )
             }
           />
@@ -79,18 +84,30 @@ function App() {
           <Route
             path="/admin"
             element={
-              user?.role === "admin"
-                ? <AdminPanel onLogout={handleLogout} />
-                : <Navigate to="/" />
+              user?.role === "admin" ? (
+                <AdminPanel
+                  onLogout={handleLogout}
+                  user={user}
+                  setUser={setUser}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
             }
           />
 
           <Route
             path="/dashboard"
             element={
-              user?.role === "user"
-                ? <UserDashboard onLogout={handleLogout} />
-                : <Navigate to="/" />
+              user?.role === "user" ? (
+                <UserDashboard
+                  onLogout={handleLogout}
+                  user={user}
+                  setUser={setUser}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
             }
           />
         </>

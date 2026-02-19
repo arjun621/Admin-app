@@ -114,8 +114,14 @@ module.exports.getMe = async (req, res) => {
       return res.status(401).json({ message: "Not logged in" });
     }
 
-    res.json({ user: req.user });
+    const user = req.user.toObject();
 
+    // Add full URL for picture
+    if (user.picture) {
+      user.picture = `http://localhost:5000${user.picture}`;
+    }
+
+    res.json({ user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
