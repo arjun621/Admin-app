@@ -3,7 +3,13 @@ const bcrypt = require("bcrypt");
 
 module.exports.createUser = async (req, res) => {
   try {
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password, role } = req.body;
+
+     console.log("Role received:", role);
+
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
     if (!fullname || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -16,11 +22,13 @@ module.exports.createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const allowedRoles = ["admin", "user"];
+
     const user = await userModel.create({
       fullname,
       email,
       password: hashedPassword,
-      role: "user"
+      role: allowedRoles.includes(role) ? role : "user"
     });
 
     return res.status(201).json({

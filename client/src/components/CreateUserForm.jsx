@@ -4,13 +4,18 @@ const CreateUserForm = ({ onCreate, message, error }) => {
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user"); // default role
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCreate({ fullname, email, password });
+
+    onCreate({ fullname, email, password, role });
+
+    // Reset fields
     setFullname("");
     setEmail("");
     setPassword("");
+    setRole("user");
   };
 
   return (
@@ -45,11 +50,21 @@ const CreateUserForm = ({ onCreate, message, error }) => {
         />
         <br /><br />
 
+        {/* Role Selection */}
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <br /><br />
+
         <button type="submit">Create User</button>
       </form>
 
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
+      {message && <p style={{ color: "green" }}>{message}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

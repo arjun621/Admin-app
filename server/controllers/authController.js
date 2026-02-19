@@ -11,7 +11,7 @@ module.exports.checkSetup = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-};
+};  
 
 module.exports.registerUser = async (req, res) => {
   try {
