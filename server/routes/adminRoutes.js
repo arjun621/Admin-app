@@ -18,4 +18,21 @@ router.get("/users", isAuthenticated, isAdmin, async (req, res) => {
 
 router.post("/create-user", isAuthenticated, isAdmin, createUser);
 
+router.put("/users/:id/permissions", isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const { permissions } = req.body;
+
+    const user = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { permissions },
+      { new: true }
+    ).select("-password");
+
+    res.json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;

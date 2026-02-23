@@ -20,7 +20,6 @@ const CreateUserForm = ({ onCreate, message, error }) => {
 
   return (
     <div>
-      <h2>Create User</h2>
 
       <form onSubmit={handleSubmit}>
         <input

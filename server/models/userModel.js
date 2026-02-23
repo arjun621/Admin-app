@@ -23,6 +23,10 @@ let userSchema = mongoose.Schema({
     picture: {
         type: String,
         default: ""
+    },
+    permissions: { 
+        type: [String], 
+        default: [] 
     }
 })
 

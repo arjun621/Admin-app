@@ -26,7 +26,7 @@ const Navbar = ({ user, setUser, onLogout, title }) => {
   };
 
    const imageUrl = user?.picture
-  ? user.picture 
+  ? user.picture // already full URL from backend
   : `https://ui-avatars.com/api/?name=${user?.fullname}`;
 
 
