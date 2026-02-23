@@ -116,7 +116,6 @@ module.exports.getMe = async (req, res) => {
 
     const user = req.user.toObject();
 
-    // Add full URL for picture
     if (user.picture) {
       user.picture = `http://localhost:5000${user.picture}`;
     }
