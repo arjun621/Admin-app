@@ -17,31 +17,27 @@ router.get("/setup", checkSetup);
 router.get("/me", isAuthenticated, getMe);
 
 
-router.put(
-    "/profile-picture",
-    isAuthenticated,
-    upload.single("picture"),
-    async (req, res) => {
-        try {
-            if (!req.file) {
-                return res.status(400).json({ message: "No file uploaded" });
-            }
-
-            const user = await User.findById(req.user.id);
-
-            user.picture = `/uploads/${req.file.filename}`;
-            await user.save();
-
-            res.json({
-                message: "Profile picture updated",
-                user
-            });
-
-        } catch (err) {
-            console.log(err);
-            res.status(500).json({ message: "Server error" });
+router.put("/profile-picture", isAuthenticated, upload.single("picture"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
         }
+
+        const user = await User.findById(req.user.id);
+
+        user.picture = `/uploads/${req.file.filename}`;
+        await user.save();
+
+        res.json({
+            message: "Profile picture updated",
+            user
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error" });
     }
+}
 );
 
 

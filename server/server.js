@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("./config/mongoose-connection");
 const adminRoutes = require("./routes/adminRoutes");
+const authRoutes = require("./routes/authRoutes")
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(cors({
   credentials: true,               
 }));
 
-app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.listen(5000, () => {

@@ -5,8 +5,6 @@ module.exports.createUser = async (req, res) => {
   try {
     const { fullname, email, password, role } = req.body;
 
-     console.log("Role received:", role);
-
     if (!req.user || req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -20,7 +18,7 @@ module.exports.createUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
     const allowedRoles = ["admin", "user"];
 

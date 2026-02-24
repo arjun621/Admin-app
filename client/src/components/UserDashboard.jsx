@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const allPages = [
-  { name: "Page1", path: "/page1" },
-  { name: "Page2", path: "/page2" },
-  { name: "Page3", path: "/page3" },
-  { name: "Page4", path: "/page4" },
-  { name: "Page5", path: "/page5" },
+  { name: "Analytics", path: "/Analytics" },
+  { name: "Setting", path: "/Setting" },
+  { name: "Contact", path: "/Contact" },
+  { name: "Profile", path: "/Profile" },
+  { name: "About Us", path: "/About Us" },
 ];
 
 const UserDashboard = ({ user, setUser, onLogout }) => {
