@@ -10,7 +10,7 @@ const Login = ({ onLogin }) => {
 
     try {
       const res = await api.post("/auth/login", { email, password });
-      alert(res.data.message);
+      // alert(res.data.message);
 
       onLogin(res.data.user);
 

@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const sendMail = require("../utils/sendMail");
 
 module.exports.createUser = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ module.exports.createUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const allowedRoles = ["admin", "user"];
 
@@ -28,6 +29,16 @@ module.exports.createUser = async (req, res) => {
       password: hashedPassword,
       role: allowedRoles.includes(role) ? role : "user"
     });
+
+    await sendMail(user.email,
+      "Welcome to Dashboard",
+      `Hello ${user.fullname},
+
+      Your account has been created by admin.
+
+      Email: ${user.email}
+      Password: ${password}`
+    );
 
     return res.status(201).json({
       message: "User created successfully",

@@ -40,12 +40,7 @@ module.exports.registerUser = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    res.cookie("token", token);
 
     return res.status(201).json({
       message: "Admin created successfully",
