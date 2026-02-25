@@ -24,11 +24,11 @@ const Login = ({ onLogin }) => {
         <h2>Login</h2>
 
         <input
-          type="email"
+          type="text"
           placeholder="Email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          required
+          // required
         />
 
         <input
@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          required
+          // required
         />
 
         <button type="submit">Login</button>

@@ -4,8 +4,6 @@ let userSchema = mongoose.Schema({
     fullname: {
         type: String,
         required: true,
-        minlength: 3,
-        maxlength: 30,
     },
     email: {
         type: String,
@@ -16,8 +14,6 @@ let userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 3,
-        maxlength: 30,
     },
     role: {
         type: String,

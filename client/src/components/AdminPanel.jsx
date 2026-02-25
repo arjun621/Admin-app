@@ -3,13 +3,14 @@ import api from "../services/api";
 import CreateUserForm from "./CreateUserForm";
 import Navbar from "./Navbar";
 
-const pages = ["Analytics","Setting","Reports","Profile","Tasks"];
+const pages = ["Analytics", "Settings", "Reports", "Profile", "Tasks"];
 
 const AdminPanel = ({ onLogout, user, setUser }) => {
   const [users, setUsers] = useState([]);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const fetchUsers = async () => {
     try {
@@ -137,7 +138,7 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
           Manage Users
         </div>
 
-        
+
       </div>
 
       {/* Main Content */}
@@ -176,38 +177,77 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
         {/* Manage Users */}
         {activeSection === "users" && (
           <div style={styles.card}>
-            <h2>User Permissions</h2>
+            <h2>User Details</h2>
 
-            {users.map((u) => (
-              <div key={u._id} style={styles.userBox}>
-                <strong>
-                  {u.fullname} ({u.role})
-                </strong>
+            {users.map((u) => {
+              const isOpen = selectedUserId === u._id;
 
-                {u.role !== "admin" && (
-                  <div style={styles.toggleRow}>
-                    {pages.map((page) => (
-                      <label key={page}>
-                        <input
-                          type="checkbox"
-                          checked={u.permissions.includes(page)}
-                          onChange={() =>
-                            handleTogglePermission(
-                              u._id,
-                              page,
-                              u.permissions
-                            )
-                          }
-                        />
-                        {" "}{page}
-                      </label>
-                    ))}
+              return (
+                <div
+                  key={u._id}
+                  style={{
+                    ...styles.userBox,
+                    cursor: "pointer",
+                    background: isOpen ? "#1a1a1a" : "#111111",
+                    transition: "all 0.2s ease",
+                  }}
+                  onClick={() =>
+                    setSelectedUserId(isOpen ? null : u._id)
+                  }
+                >
+                  {/* Header */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <strong>{u.fullname}</strong>
+                    <span>{isOpen ? "▲" : "▼"}</span>
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Dropdown Content */}
+                  {isOpen && (
+                    <div style={{ marginTop: "12px" }}>
+                      <p><strong>Email: </strong> {u.email}</p>
+                      <p><strong>Role: </strong> {u.role}</p>
+
+                      {u.role !== "admin" && (
+                        <div style={styles.toggleRow}>
+                          <strong>Permissions:</strong>
+                          {pages.map((page) => (
+                            <label
+                              key={page}
+                              onClick={(e) => e.stopPropagation()} // 🔥 important
+                            >
+                              <input
+                                type="checkbox"
+                                checked={u.permissions?.includes(page)}
+                                onChange={() =>
+                                  handleTogglePermission(
+                                    u._id,
+                                    page,
+                                    u.permissions || []
+                                  )
+                                }
+                              />
+                              {" "}{page}
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
+
+
+
+
       </div>
     </div>
   );
