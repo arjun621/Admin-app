@@ -16,7 +16,6 @@ const Register = ({ onRegister }) => {
         password
       });
 
-      // alert(res.data.message);
       onRegister(res.data.user);
 
     } catch (err) {

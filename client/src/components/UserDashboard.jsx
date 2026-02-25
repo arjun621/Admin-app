@@ -3,10 +3,10 @@ import Navbar from "./Navbar";
 
 const allPages = [
   { name: "Analytics", path: "/Analytics" },
-  { name: "Setting", path: "/Setting" },
-  { name: "Contact", path: "/Contact" },
+  { name: "Settings", path: "/Settings" },
+  { name: "Reports", path: "/Reports" },
   { name: "Profile", path: "/Profile" },
-  { name: "About Us", path: "/About Us" },
+  { name: "Tasks", path: "/Tasks" },
 ];
 
 const UserDashboard = ({ user, setUser, onLogout }) => {

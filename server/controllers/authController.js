@@ -11,7 +11,7 @@ module.exports.checkSetup = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-};  
+};
 
 module.exports.registerUser = async (req, res) => {
   try {
@@ -121,3 +121,42 @@ module.exports.getMe = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+module.exports.setPfp = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const user = await userModel.findById(req.user.id);
+
+    user.picture = `/uploads/${req.file.filename}`;
+    await user.save();
+
+    res.json({
+      message: "Profile picture updated",
+      user
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+module.exports.deletePfp = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+
+    user.picture = "";
+    await user.save();
+
+    res.json({
+      message: "Profile picture removed",
+      user
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+}

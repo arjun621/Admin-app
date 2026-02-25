@@ -10,6 +10,7 @@ import Page2 from "./pages/Analytics";
 import Page3 from "./pages/Settings";
 import Page4 from "./pages/Tasks";
 import Page5 from "./pages/Profile";
+import NotFound from "./pages/NotFound";
 
 
 function App() {
@@ -57,6 +58,10 @@ function App() {
     await api.post("/auth/logout");
     setUser(null);
   };
+
+  useEffect(() => {
+    console.log("User updated:", user);
+  }, [user]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -120,47 +125,56 @@ function App() {
       )}
 
       <Route
-        path="/page1"
+        path="/Reports"
         element={
-          user?.role === "admin" || user?.permissions.includes("Page1")
+          user?.role === "admin" || user?.permissions.includes("Reports")
             ? <Page1 />
             : <Navigate to="/" />
         }
       />
 
       <Route
-        path="/page2"
+        path="/Analytics"
         element={
-          user?.role === "admin" || user?.permissions.includes("Page2")
+          user?.role === "admin" || user?.permissions.includes("Analytics")
             ? <Page2 />
             : <Navigate to="/" />
         }
       />
 
       <Route
-        path="/page3"
+        path="/Settings"
         element={
-          user?.role === "admin" || user?.permissions.includes("Page3")
+          user?.role === "admin" || user?.permissions.includes("Settings")
             ? <Page3 />
             : <Navigate to="/" />
         }
       />
 
       <Route
-        path="/page4"
+        path="/Tasks"
         element={
-          user?.role === "admin" || user?.permissions.includes("Page4")
+          user?.role === "admin" || user?.permissions.includes("Tasks")
             ? <Page4 />
             : <Navigate to="/" />
         }
       />
 
       <Route
-        path="/page5"
+        path="/Profile"
         element={
-          user?.role === "admin" || user?.permissions.includes("Page5")
+          user?.role === "admin" || user?.permissions.includes("Profile")
             ? <Page5 />
             : <Navigate to="/" />
+        }
+      />
+
+      <Route path="*" element={<NotFound />} />
+
+      <Route
+        path="*"
+        element={
+          user ? <NotFound /> : <Navigate to="/" />
         }
       />
 

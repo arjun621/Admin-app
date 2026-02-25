@@ -25,27 +25,29 @@ const CreateUserForm = ({ onCreate, message, error }) => {
         <input
           type="text"
           placeholder="Full Name"
+          maxLength={30}
           value={fullname}
           onChange={(e) => setFullname(e.target.value)}
-          required
+          // required
         />
         <br /><br />
 
         <input
-          type="email"
+          type="text"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
+          // required
         />
         <br /><br />
 
         <input
           type="password"
           placeholder="Password"
+          maxLength={30}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
+          // required
         />
         <br /><br />
 

@@ -3,7 +3,7 @@ import api from "../services/api";
 import CreateUserForm from "./CreateUserForm";
 import Navbar from "./Navbar";
 
-const pages = ["Analytics","Settings","Contact","Profile","About Us"];
+const pages = ["Analytics","Setting","Reports","Profile","Tasks"];
 
 const AdminPanel = ({ onLogout, user, setUser }) => {
   const [users, setUsers] = useState([]);

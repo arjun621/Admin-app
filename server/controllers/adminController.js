@@ -2,6 +2,11 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const sendMail = require("../utils/sendMail");
 
+module.exports.getUser = async (req, res) => {
+  const users = await userModel.find().select("-password");
+  res.json({ users });
+}
+
 module.exports.createUser = async (req, res) => {
   try {
     const { fullname, email, password, role } = req.body;
@@ -12,6 +17,26 @@ module.exports.createUser = async (req, res) => {
 
     if (!fullname || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (fullname.trim().length > 30) {
+      return res.status(400).json({
+        message: "Fullname must be under 30 characters",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
+      });
     }
 
     const existingUser = await userModel.findOne({ email });
@@ -30,14 +55,15 @@ module.exports.createUser = async (req, res) => {
       role: allowedRoles.includes(role) ? role : "user"
     });
 
-    await sendMail(user.email,
+    await sendMail(
+      user.email,
       "Welcome to Dashboard",
       `Hello ${user.fullname},
 
-      Your account has been created by admin.
+Your account has been created by admin.
 
-      Email: ${user.email}
-      Password: ${password}`
+Email: ${user.email}
+Password: ${password}`
     );
 
     return res.status(201).json({
@@ -55,3 +81,23 @@ module.exports.createUser = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+module.exports.permission = async (req, res) => {
+  try {
+    const { permissions } = req.body;
+
+    const user = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { permissions },
+      { new: true }
+    ).select("-password");
+
+    res.json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+
+
