@@ -28,8 +28,18 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
   const handleCreateUser = async (userData) => {
     setMessage("");
     setError("");
+
     try {
-      const res = await api.post("/admin/create-user", userData);
+      const res = await api.post(
+        "/admin/create-user",
+        userData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       setMessage(res.data.message);
       fetchUsers();
     } catch (err) {
@@ -54,6 +64,12 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const getImageUrl = (u) => {
+    return u.picture
+      ? `http://localhost:5000${u.picture}`   // your backend path
+      : `https://ui-avatars.com/api/?name=${u.fullname}`; // fallback avatar
   };
 
   const styles = {
@@ -179,48 +195,56 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
           <div style={styles.card}>
             <h2>User Details</h2>
 
-            {users.map((u) => {
-              const isOpen = selectedUserId === u._id;
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #333", textAlign: "left" }}>
+                  <th style={{ padding: "8px" }}>Profile</th>
+                  <th style={{ padding: "8px" }}>Username</th>
+                  <th style={{ padding: "8px" }}>Email</th>
+                  <th style={{ padding: "8px" }}>Role</th>
+                  <th style={{ padding: "8px" }}>Permissions</th>
+                </tr>
+              </thead>
 
-              return (
-                <div
-                  key={u._id}
-                  style={{
-                    ...styles.userBox,
-                    cursor: "pointer",
-                    background: isOpen ? "#1a1a1a" : "#111111",
-                    transition: "all 0.2s ease",
-                  }}
-                  onClick={() =>
-                    setSelectedUserId(isOpen ? null : u._id)
-                  }
-                >
-                  {/* Header */}
-                  <div
+              <tbody>
+                {users.map((u) => (
+                  <tr
+                    key={u._id}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
+                      borderBottom: "1px solid #222",
+                      background: "#111111",
                     }}
                   >
-                    <strong>{u.fullname}</strong>
-                    <span>{isOpen ? "▲" : "▼"}</span>
-                  </div>
+                    {/* Profile Picture */}
+                    <td style={{ padding: "8px" }}>
+                      <img
+                        src={getImageUrl(u) + `?t=${Date.now()}`} // force refresh
+                        alt="profile"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "2px solid #333",
+                        }}
+                      />
+                    </td>
 
-                  {/* Dropdown Content */}
-                  {isOpen && (
-                    <div style={{ marginTop: "12px" }}>
-                      <p><strong>Email: </strong> {u.email}</p>
-                      <p><strong>Role: </strong> {u.role}</p>
+                    {/* Username */}
+                    <td style={{ padding: "8px" }}>{u.fullname}</td>
 
-                      {u.role !== "admin" && (
+                    {/* Email */}
+                    <td style={{ padding: "8px" }}>{u.email}</td>
+
+                    {/* Role */}
+                    <td style={{ padding: "8px" }}>{u.role}</td>
+
+                    {/* Permissions */}
+                    <td style={{ padding: "8px" }}>
+                      {u.role !== "admin" ? (
                         <div style={styles.toggleRow}>
-                          <strong>Permissions:</strong>
                           {pages.map((page) => (
-                            <label
-                              key={page}
-                              onClick={(e) => e.stopPropagation()} // 🔥 important
-                            >
+                            <label key={page} style={{ marginRight: "10px" }}>
                               <input
                                 type="checkbox"
                                 checked={u.permissions?.includes(page)}
@@ -231,17 +255,19 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
                                     u.permissions || []
                                   )
                                 }
-                              />
-                              {" "}{page}
+                              />{" "}
+                              {page}
                             </label>
                           ))}
                         </div>
+                      ) : (
+                        <span>—</span>
                       )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 

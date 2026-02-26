@@ -11,6 +11,7 @@ import Page3 from "./pages/Settings";
 import Page4 from "./pages/Tasks";
 import Page5 from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { Toaster } from "react-hot-toast";
 
 
 function App() {

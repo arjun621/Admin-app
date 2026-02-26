@@ -5,17 +5,30 @@ const CreateUserForm = ({ onCreate, message, error }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user"); // default role
+  const [profilePic, setProfilePic] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onCreate({ fullname, email, password, role });
+    const formData = new FormData();
+
+    formData.append("fullname", fullname);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("role", role);
+
+    if (profilePic) {
+      formData.append("profilePic", profilePic);
+    }
+
+    onCreate(formData);
 
     // Reset fields
     setFullname("");
     setEmail("");
     setPassword("");
     setRole("user");
+    setProfilePic(null);
   };
 
   return (
@@ -28,7 +41,7 @@ const CreateUserForm = ({ onCreate, message, error }) => {
           maxLength={30}
           value={fullname}
           onChange={(e) => setFullname(e.target.value)}
-          // required
+        // required
         />
         <br /><br />
 
@@ -37,7 +50,7 @@ const CreateUserForm = ({ onCreate, message, error }) => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          // required
+        // required
         />
         <br /><br />
 
@@ -47,7 +60,14 @@ const CreateUserForm = ({ onCreate, message, error }) => {
           maxLength={30}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          // required
+        // required
+        />
+        <br /><br />
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setProfilePic(e.target.files[0])}
         />
         <br /><br />
 

@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const sendMail = require("../utils/sendMail");
 
+
 module.exports.getUser = async (req, res) => {
   const users = await userModel.find().select("-password");
   res.json({ users });
@@ -48,13 +49,18 @@ module.exports.createUser = async (req, res) => {
 
     const allowedRoles = ["admin", "user"];
 
+    let picture = "";
+    if (req.file) {
+      picture = `/uploads/${req.file.filename}`;
+    }
+
     const user = await userModel.create({
       fullname,
       email,
       password: hashedPassword,
-      role: allowedRoles.includes(role) ? role : "user"
+      role: allowedRoles.includes(role) ? role : "user",
+      picture: picture
     });
-
     await sendMail(
       user.email,
       "Welcome to Dashboard",
@@ -72,7 +78,8 @@ Password: ${password}`
         id: user._id,
         fullname: user.fullname,
         email: user.email,
-        role: user.role
+        role: user.role,
+        picture: user.picture
       }
     });
 
