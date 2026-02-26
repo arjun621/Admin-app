@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import CreateUserForm from "./CreateUserForm";
 import Navbar from "./Navbar";
+import { toast } from "react-hot-toast";
 
 const pages = ["Analytics", "Settings", "Reports", "Profile", "Tasks"];
 
@@ -41,9 +42,16 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
       );
 
       setMessage(res.data.message);
+      toast.success(res.data.message, {
+        duration: 3000,
+      });
       fetchUsers();
+
     } catch (err) {
       setError(err.response?.data?.message || "Error creating user");
+      toast.error(errMsg, {
+        duration: 3000,
+      });
     }
   };
 

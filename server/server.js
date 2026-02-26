@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
   if (err.message && err.message.includes("Only images allowed")) {
     return res.status(400).json({ message: err.message });
   }
-
+``
   console.error(err);
   res.status(500).json({ message: err.message || "Server error" });
 });

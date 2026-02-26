@@ -58,6 +58,7 @@ function App() {
   const handleLogout = async () => {
     await api.post("/auth/logout");
     setUser(null);
+    toast.success("Logout Successfull", { duration: 3000 })
   };
 
   useEffect(() => {
@@ -67,119 +68,124 @@ function App() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <Routes>
+    <>
+      <Routes>
 
-      {/* SETUP MODE */}
-      {setupRequired && (
+        {/* SETUP MODE */}
+        {setupRequired && (
+          <Route
+            path="*"
+            element={<Register onRegister={handleLogin} />}
+          />
+        )}
+
+        {/* NORMAL MODE */}
+        {!setupRequired && (
+          <>
+            <Route
+              path="/"
+              element={
+                !user ? (
+                  <Login onLogin={handleLogin} />
+                ) : user.role === "admin" ? (
+                  <Navigate to="/admin" replace />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                user?.role === "admin" ? (
+                  <AdminPanel
+                    onLogout={handleLogout}
+                    user={user}
+                    setUser={setUser}
+                  />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                user?.role === "user" ? (
+                  <UserDashboard
+                    onLogout={handleLogout}
+                    user={user}
+                    setUser={setUser}
+                  />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+          </>
+        )}
+
+        <Route
+          path="/Reports"
+          element={
+            user?.role === "admin" || user?.permissions.includes("Reports")
+              ? <Page1 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/Analytics"
+          element={
+            user?.role === "admin" || user?.permissions.includes("Analytics")
+              ? <Page2 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/Settings"
+          element={
+            user?.role === "admin" || user?.permissions.includes("Settings")
+              ? <Page3 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/Tasks"
+          element={
+            user?.role === "admin" || user?.permissions.includes("Tasks")
+              ? <Page4 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route
+          path="/Profile"
+          element={
+            user?.role === "admin" || user?.permissions.includes("Profile")
+              ? <Page5 />
+              : <Navigate to="/" />
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
+
         <Route
           path="*"
-          element={<Register onRegister={handleLogin} />}
+          element={
+            user ? <NotFound /> : <Navigate to="/" />
+          }
         />
-      )}
 
-      {/* NORMAL MODE */}
-      {!setupRequired && (
-        <>
-          <Route
-            path="/"
-            element={
-              !user ? (
-                <Login onLogin={handleLogin} />
-              ) : user.role === "admin" ? (
-                <Navigate to="/admin" replace />
-              ) : (
-                <Navigate to="/dashboard" replace />
-              )
-            }
-          />
+      </Routes>
 
-          <Route
-            path="/admin"
-            element={
-              user?.role === "admin" ? (
-                <AdminPanel
-                  onLogout={handleLogout}
-                  user={user}
-                  setUser={setUser}
-                />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
+      <Toaster position="top-right" reverseOrder={false} />
 
-          <Route
-            path="/dashboard"
-            element={
-              user?.role === "user" ? (
-                <UserDashboard
-                  onLogout={handleLogout}
-                  user={user}
-                  setUser={setUser}
-                />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-        </>
-      )}
-
-      <Route
-        path="/Reports"
-        element={
-          user?.role === "admin" || user?.permissions.includes("Reports")
-            ? <Page1 />
-            : <Navigate to="/" />
-        }
-      />
-
-      <Route
-        path="/Analytics"
-        element={
-          user?.role === "admin" || user?.permissions.includes("Analytics")
-            ? <Page2 />
-            : <Navigate to="/" />
-        }
-      />
-
-      <Route
-        path="/Settings"
-        element={
-          user?.role === "admin" || user?.permissions.includes("Settings")
-            ? <Page3 />
-            : <Navigate to="/" />
-        }
-      />
-
-      <Route
-        path="/Tasks"
-        element={
-          user?.role === "admin" || user?.permissions.includes("Tasks")
-            ? <Page4 />
-            : <Navigate to="/" />
-        }
-      />
-
-      <Route
-        path="/Profile"
-        element={
-          user?.role === "admin" || user?.permissions.includes("Profile")
-            ? <Page5 />
-            : <Navigate to="/" />
-        }
-      />
-
-      <Route path="*" element={<NotFound />} />
-
-      <Route
-        path="*"
-        element={
-          user ? <NotFound /> : <Navigate to="/" />
-        }
-      />
-
-    </Routes>
+    </>
   );
 }
 

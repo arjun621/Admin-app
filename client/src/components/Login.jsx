@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import api from "../services/api";
+import { toast } from "react-hot-toast";
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorToastShown, setErrorToastShown] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -12,9 +14,17 @@ const Login = ({ onLogin }) => {
       const res = await api.post("/auth/login", { email, password });
 
       onLogin(res.data.user);
+      toast.success("Login successful", { duration: 3000 });
+      setErrorToastShown(false);
 
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(
+        err.response?.data?.message || "Login failed",
+        {
+          id: "login-error",   
+          duration: 3000,
+        }
+      );
     }
   };
 
@@ -28,7 +38,7 @@ const Login = ({ onLogin }) => {
           placeholder="Email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          // required
+        // required
         />
 
         <input
@@ -36,7 +46,7 @@ const Login = ({ onLogin }) => {
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          // required
+        // required
         />
 
         <button type="submit">Login</button>

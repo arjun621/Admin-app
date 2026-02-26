@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const CreateUserForm = ({ onCreate, message, error }) => {
   const [fullname, setFullname] = useState("");
@@ -22,6 +23,13 @@ const CreateUserForm = ({ onCreate, message, error }) => {
     }
 
     onCreate(formData);
+
+    if (message) toast.success(message, {
+      duration: 3000,
+    });
+    if (error) toast.error(error, {
+      duration: 3000,
+    });
 
     // Reset fields
     setFullname("");

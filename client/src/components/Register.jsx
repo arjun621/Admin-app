@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../services/api";
+import { toast } from "react-hot-toast";
 
 const Register = ({ onRegister }) => {
   const [fullname, setFullname] = useState("");
@@ -17,9 +18,16 @@ const Register = ({ onRegister }) => {
       });
 
       onRegister(res.data.user);
+      toast.success("Registeration successfull", { duration: 3000 })
 
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      toast.error(
+        err.response?.data?.message || "Registeration failed",
+        {
+          id: "registeration-error",   
+          duration: 3000,
+        }
+      );
     }
   };
 
@@ -34,16 +42,16 @@ const Register = ({ onRegister }) => {
           placeholder="Full Name"
           value={fullname}
           onChange={e => setFullname(e.target.value)}
-          required
+          // required
         />
 
         <input
           style={inputStyle}
-          type="email"
+          type="Text"
           placeholder="Email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          required
+          // required
         />
 
         <input
@@ -52,7 +60,7 @@ const Register = ({ onRegister }) => {
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          required
+          // required
         />
 
         <button style={buttonStyle} type="submit">
@@ -81,7 +89,7 @@ const formStyle = {
   border: "1px solid #ccc",
   borderRadius: "8px",
   width: "320px",
-//   backgroundColor: "#444",
+  //   backgroundColor: "#444",
   boxShadow: "0 8px 20px rgba(0,0,0,0.08)"
 };
 
@@ -101,7 +109,6 @@ const buttonStyle = {
   padding: "10px",
   borderRadius: "6px",
   border: "none",
-  backgroundColor: "#4CAF50",
   color: "white",
   fontWeight: "bold",
   cursor: "pointer"

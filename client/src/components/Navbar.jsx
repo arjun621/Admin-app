@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import api from "../services/api";
+import { toast } from "react-hot-toast";
 
 const Navbar = ({ user, setUser, onLogout, title }) => {
   const fileRef = useRef();
@@ -11,6 +12,9 @@ const Navbar = ({ user, setUser, onLogout, title }) => {
   try {
     const res = await api.put("/auth/profile-picture", formData);
     setUser(res.data.user);
+    toast.success("Image uploaded Successfully", {
+      duration: 3000,
+    })
   } catch (err) {
     console.log(err);
   }

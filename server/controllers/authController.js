@@ -21,6 +21,27 @@ module.exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    if (fullname.trim().length > 30) {
+      return res.status(400).json({
+        message: "Fullname must be under 30 characters",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
+      });
+    }
+
+
     const userCount = await userModel.countDocuments();
 
     if (userCount > 0) {
