@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import Cropper from "react-easy-crop";
+import { useCallback } from "react";
 
 const CreateUserForm = ({ onCreate, message, error }) => {
   const [fullname, setFullname] = useState("");
@@ -8,7 +10,46 @@ const CreateUserForm = ({ onCreate, message, error }) => {
   const [role, setRole] = useState("user"); // default role
   const [profilePic, setProfilePic] = useState(null);
 
-  const handleSubmit = (e) => {
+  //crop profile pic
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const getCroppedImg = async () => {
+    const image = new Image();
+    image.src = imageSrc;
+
+    await new Promise((resolve) => {
+      image.onload = resolve;
+    });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = croppedAreaPixels.width;
+    canvas.height = croppedAreaPixels.height;
+
+    ctx.drawImage(
+      image,
+      croppedAreaPixels.x,
+      croppedAreaPixels.y,
+      croppedAreaPixels.width,
+      croppedAreaPixels.height,
+      0,
+      0,
+      croppedAreaPixels.width,
+      croppedAreaPixels.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/jpeg");
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -18,8 +59,9 @@ const CreateUserForm = ({ onCreate, message, error }) => {
     formData.append("password", password);
     formData.append("role", role);
 
-    if (profilePic) {
-      formData.append("profilePic", profilePic);
+    if (imageSrc && croppedAreaPixels) {
+      const croppedImage = await getCroppedImg();
+      formData.append("profilePic", croppedImage, "profile.jpg");
     }
 
     onCreate(formData);
@@ -75,8 +117,46 @@ const CreateUserForm = ({ onCreate, message, error }) => {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setProfilePic(e.target.files[0])}
+          onChange={(e) => {
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+              alert("File must be under 10MB");
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+              setImageSrc(reader.result);
+            };
+          }}
         />
+        {imageSrc && (
+          <div style={{ position: "relative", width: 300, height: 300 }}>
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1} // square
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={(croppedArea, croppedAreaPixels) => {
+                setCroppedAreaPixels(croppedAreaPixels);
+              }}
+            />
+            <input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              onChange={(e) => setZoom(e.target.value)}
+            />
+          </div>
+        )}
         <br /><br />
 
         {/* Role Selection */}
