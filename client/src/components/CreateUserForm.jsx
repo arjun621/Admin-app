@@ -112,6 +112,12 @@ const CreateUserForm = ({ onCreate, message, error }) => {
             const file = e.target.files[0];
             if (!file) return;
 
+            // ✅ File size limit: 10MB
+            if (file.size > 10 * 1024 * 1024) {
+              toast.error("File must be under 10MB", { duration: 3000 });
+              return;
+            }
+
             const reader = new FileReader();
             reader.onload = () => setImageSrc(reader.result);
             reader.readAsDataURL(file);
