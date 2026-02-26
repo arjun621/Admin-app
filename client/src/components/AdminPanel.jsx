@@ -42,16 +42,21 @@ const AdminPanel = ({ onLogout, user, setUser }) => {
       );
 
       setMessage(res.data.message);
-      toast.success(res.data.message, {
-        duration: 3000,
-      });
-      fetchUsers();
+      toast.success(res.data.message, { duration: 3000 });
 
+      fetchUsers();
     } catch (err) {
-      setError(err.response?.data?.message || "Error creating user");
-      toast.error(errMsg, {
-        duration: 3000,
-      });
+      const errMsg =
+        err.response?.data?.message || "Error creating user";
+
+      setError(errMsg);
+      toast.error(
+        err.response?.data?.message,
+        {
+          id: "login-error",
+          duration: 3000,
+        }
+      );
     }
   };
 
